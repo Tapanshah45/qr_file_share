@@ -1,5 +1,0 @@
-Preferred tools for development: - No-code/low-code platforms: Buzzy, Figma, Softr, Bolt, Glide - AI agent models: Dolphin 3, Hermes 3, Llama-3.2-dark-champion-abiterated, Replit, MiniMax - ChatGPT for assistance. User is open to using additional no-code/low-code tools and AI models beyond the ones they mentioned if they are better for the ride-sharing project. User wants to use the best available no-code/low-code tools and AI models, even if they are not from their initial list, to ensure the highest quality for the ride-sharing project.
-
-
-
-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

@@ -1,0 +1,5 @@
+p <- 1:1000
+rs <- replicate(300. sample(p,4))
+ms <- colMeans(rs)
+hist(rs)
+hist(ms)
