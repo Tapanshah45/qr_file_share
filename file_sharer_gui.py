@@ -1,12 +1,10 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog
 import requests
 import qrcode
 from PIL import Image, ImageTk
-import io
 
-# Replace this with your deployed Flask URL on Render
-BACKEND_URL = "https://qr-file-share-2.onrender.com/upload"  # Add /upload route
+BACKEND_URL = "https://qr-file-share-2.onrender.com/upload"
 
 def upload_file():
     file_path = filedialog.askopenfilename()
@@ -14,41 +12,40 @@ def upload_file():
         return
 
     try:
-        with open(file_path, 'rb') as file:
-            files = {'file': file}
-            response = requests.post(BACKEND_URL, files=files)
-            response.raise_for_status()
-            file_url = response.json().get('file_url')
-            if file_url:
-                generate_qr(file_url)
-            else:
-                messagebox.showerror("Error", "No file URL returned.")
+        with open(file_path, 'rb') as f:
+            response = requests.post(BACKEND_URL, files={'file': f})
+        
+        print("Status Code:", response.status_code)
+        print("Response:", response.text)
+
+        if response.status_code == 200:
+            data = response.json()
+            file_url = data['file_url']
+            generate_qr(file_url)
+        else:
+            result_label.config(text=f"Upload failed: {response.status_code}")
     except Exception as e:
-        messagebox.showerror("Upload Failed", str(e))
+        result_label.config(text=f"Error: {str(e)}")
 
-def generate_qr(data):
-    qr = qrcode.make(data)
-    buffer = io.BytesIO()
-    qr.save(buffer, format="PNG")
-    buffer.seek(0)
-    qr_img = Image.open(buffer)
-    qr_img = qr_img.resize((250, 250))
-    tk_img = ImageTk.PhotoImage(qr_img)
-
-    qr_label.config(image=tk_img)
-    qr_label.image = tk_img
-
-    messagebox.showinfo("Success", "QR Code generated for file download!")
+def generate_qr(link):
+    qr_img = qrcode.make(link)
+    qr_img = qr_img.resize((200, 200))
+    img = ImageTk.PhotoImage(qr_img)
+    qr_label.config(image=img)
+    qr_label.image = img
+    result_label.config(text="Scan QR to download!")
 
 # GUI Setup
 root = tk.Tk()
-root.title("QR File Share")
-root.geometry("400x400")
+root.title("QR File Sharer")
 
-upload_btn = tk.Button(root, text="Upload File", command=upload_file, bg="black", fg="white", font=("Arial", 12))
-upload_btn.pack(pady=20)
+upload_btn = tk.Button(root, text="Upload File", command=upload_file)
+upload_btn.pack(pady=10)
 
 qr_label = tk.Label(root)
-qr_label.pack()
+qr_label.pack(pady=10)
+
+result_label = tk.Label(root, text="")
+result_label.pack()
 
 root.mainloop()
